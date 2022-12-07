@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,8 +39,13 @@ public class SecurityConfiguration {
   @Order(Ordered.HIGHEST_PRECEDENCE)
   public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
     OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-    http.formLogin().loginPage("http://localhost:8099/auth/login");
-    return http.formLogin(Customizer.withDefaults()).build();
+    return http
+      .formLogin()
+      .loginPage("http://localhost:8099/auth/login")
+      .and()
+      .csrf()
+      .disable()
+      .build();
   }
 
   @Bean
@@ -66,8 +70,6 @@ public class SecurityConfiguration {
 //      .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 //      .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
       .redirectUri("https://oidcdebugger.com/debug")
-//      .redirectUri("http://localhost:8099/auth/login/oauth2/code/messaging-client-oidc")
-//      .redirectUri("http://localhost:8099/authorized")
       .scope(OidcScopes.OPENID)
 //      .scope(OidcScopes.PROFILE)
       .scope("storages.write")
@@ -80,14 +82,7 @@ public class SecurityConfiguration {
   @Bean
   public AuthorizationServerSettings authorizationServerSettings() {
     return AuthorizationServerSettings.builder()
-//      .issuer("http://auth-service/auth")
-//      .authorizationEndpoint("http://gateway/auth/oauth2/authorize")
-//      .tokenEndpoint("/oauth2/token")
-//      .jwkSetEndpoint("/oauth2/jwks")
-//      .tokenRevocationEndpoint("/oauth2/revoke")
-//      .tokenIntrospectionEndpoint("/oauth2/introspect")
-//      .oidcClientRegistrationEndpoint("/connect/register")
-//      .oidcUserInfoEndpoint("/userinfo")
+      .issuer("http://localhost:8099/auth/login")
       .build();
   }
 
