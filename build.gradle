@@ -1,0 +1,34 @@
+plugins {
+  id "org.springframework.boot" version "${springBootVersion}"
+  id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+  id 'java'
+}
+
+group 'com.epam.microservices'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+repositories {
+  mavenCentral()
+}
+
+ext {
+  authorizationServerVersion = "0.4.0"
+  junitVersion = "1.9.1"
+}
+
+dependencies {
+  implementation "org.springframework.boot:spring-boot-starter-web"
+  implementation "org.springframework.boot:spring-boot-starter-security"
+
+  implementation "org.springframework.security:spring-security-oauth2-authorization-server:${authorizationServerVersion}"
+  implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${springCloudVersion}"
+
+  testImplementation "org.springframework.boot:spring-boot-starter-test"
+}
+
+test {
+  useJUnitPlatform()
+}
