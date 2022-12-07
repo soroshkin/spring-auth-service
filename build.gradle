@@ -15,7 +15,7 @@ repositories {
 }
 
 ext {
-  authorizationServerVersion = "0.4.0"
+  authorizationServerVersion = "0.2.0"
   junitVersion = "1.9.1"
 }
 
