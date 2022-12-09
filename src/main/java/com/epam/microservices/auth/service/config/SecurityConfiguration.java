@@ -64,18 +64,15 @@ public class SecurityConfiguration {
   @Bean
   public RegisteredClientRepository registeredClientRepository() {
     RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-      .clientId("messaging-client")
+      .clientId("storages-client")
       .clientSecret("{noop}secret")
-//      .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
       .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
       .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
       .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
       .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
       .redirectUri("https://oidcdebugger.com/debug")
       .scope(OidcScopes.OPENID)
-//      .scope(OidcScopes.PROFILE)
       .scope("storages.write")
-//      .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
       .build();
 
     return new InMemoryRegisteredClientRepository(registeredClient);
