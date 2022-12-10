@@ -24,11 +24,18 @@ public class WebSecurityConfiguration {
   @Value("${gateway.server.base-url}")
   private String gatewayBaseUrl;
 
+  private final CorsCustomizer corsCustomizer;
+
+  public WebSecurityConfiguration(CorsCustomizer corsCustomizer) {
+    this.corsCustomizer = corsCustomizer;
+  }
+
   @Bean
   SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+    corsCustomizer.corsCustomizer(http);
     return http
       .authorizeRequests()
-      .antMatchers("/favicon.ico", "/resources/**", "/error")
+      .antMatchers("/favicon.ico", "/resources/**", "/error", "/exchange/**", "/demo/**")
       .permitAll()
       .and()
       .authorizeRequests()
@@ -39,8 +46,6 @@ public class WebSecurityConfiguration {
       .loginProcessingUrl("/login")
       .successHandler(new RewriteHostSavedRequestAwareSuccessHandler())
       .and()
-      .csrf()
-      .disable()
       .build();
   }
 
@@ -51,6 +56,7 @@ public class WebSecurityConfiguration {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
       SavedRequest savedRequest = this.requestCache.getRequest(request, response);
+      logger.info(savedRequest);
       if (savedRequest == null) {
         super.onAuthenticationSuccess(request, response, authentication);
         return;
@@ -69,6 +75,11 @@ public class WebSecurityConfiguration {
 
       logger.info(targetUrl);
       getRedirectStrategy().sendRedirect(request, response, targetUrl);
+    }
+
+    @Override
+    public void setRequestCache(RequestCache requestCache) {
+      this.requestCache = requestCache;
     }
   }
 }

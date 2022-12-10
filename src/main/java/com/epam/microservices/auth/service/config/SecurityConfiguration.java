@@ -37,16 +37,21 @@ public class SecurityConfiguration {
   @Value("${gateway.server.base-url}")
   private String gatewayBaseUrl;
 
+  private final CorsCustomizer corsCustomizer;
+
+  public SecurityConfiguration(CorsCustomizer corsCustomizer) {
+    this.corsCustomizer = corsCustomizer;
+  }
+
   @Bean
   @Order(Ordered.HIGHEST_PRECEDENCE)
   public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
     OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+    corsCustomizer.corsCustomizer(http);
     return http
       .formLogin()
       .loginPage(gatewayBaseUrl + "/auth/login")
       .and()
-      .csrf()
-      .disable()
       .build();
   }
 
@@ -70,7 +75,7 @@ public class SecurityConfiguration {
       .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
       .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
       .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-      .redirectUri("https://oidcdebugger.com/debug")
+      .redirectUri("http://127.0.0.1:3000/authorized")
       .scope(OidcScopes.OPENID)
       .scope("storages.write")
       .build();
